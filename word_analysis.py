@@ -165,6 +165,7 @@ class WordNetwork:
                     self.clean_words.append(word)
                     self.vocabulary.add(word)
 
+    # ------------------------------------------------------------------------------------------------------------------
     # creates a list of n-grams. Individual words are joined together by "_"
     def ngram(self) -> None:
         """
@@ -181,6 +182,7 @@ class WordNetwork:
             self.n_grams_list.append(self.clean_words[count] + '_' + self.clean_words[count + self.n_value - 1])
             count += 1
 
+    # ------------------------------------------------------------------------------------------------------------------
     # creates a list of the "num" most common elements/strings in an input list
     def most_common(self) -> None:
         """
@@ -197,6 +199,7 @@ class WordNetwork:
         for i in range(0, self.n_sim_elems):
             self.top_comm.append(common[i][0])
 
+    # ------------------------------------------------------------------------------------------------------------------
     # creating and presenting the wordcloud
     def word_cloud_generation(self) -> None:
         """
@@ -227,6 +230,7 @@ class WordNetwork:
         plt.axis('off')
         plt.show()
 
+    # ------------------------------------------------------------------------------------------------------------------
     # Topics extraction using LDA (Latent Dirichlet Allocation)
     def topic_modeling(self):
         """
@@ -258,6 +262,7 @@ class WordNetwork:
 
             return pyLDAvis.display(lda_display)
 
+    # ------------------------------------------------------------------------------------------------------------------
     # creates a matrix of co-occurrence
     def co_occurrence(self):
         """
@@ -311,8 +316,12 @@ def read_input(file):
     """
     file_name = file if file.lower().endswith('.txt') else file + '.txt'
 
-    with open(file=file_name, mode='r', encoding='utf8') as fr1:
-        return [word.strip() for word in fr1 if word]
+    try:
+        with open(file=file_name, mode='r', encoding='utf8') as fr1:
+            return [word.strip() for word in fr1 if word]
+    except FileNotFoundError:
+        print('Error reading the input data')
+        return None
 
 
 # MAIN PROGRAM
@@ -323,4 +332,4 @@ if __name__ == '__main__':
                     generate_adj_matrix=False,
                     visualize=False)
     except Exception as ex1:
-        print('Something went wrong during execution of Script 3: {}'.format(ex1))
+        print('Something went wrong during execution: {}'.format(ex1))
