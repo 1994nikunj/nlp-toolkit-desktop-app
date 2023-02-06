@@ -40,8 +40,9 @@ class WordNetwork:
                  visualize: bool):
 
         # Local class variable declaration
-        self.input_file = input_file
-        self.stop_file = stop_file
+        self.input_filename = input_file
+        self.input_file = 'Inputs/{}'.format(input_file)
+        self.stop_file = 'Inputs/{}'.format(stop_file)
         self.generate_adj_matrix = generate_adj_matrix
         self.visualize = visualize
 
@@ -131,7 +132,7 @@ class WordNetwork:
             )
             visual_graph.from_nx(G)
             visual_graph.show_buttons(filter_=['physics'])
-            visual_graph.show(self.input_file + '.html')
+            visual_graph.show('/Outputs/' + self.input_filename + '.html')
 
     # ------------------------------------------------------------------------------------------------------------------
     # cleans text
@@ -223,7 +224,8 @@ class WordNetwork:
         wc.generate(all_words_string)
 
         # store to file
-        wc.to_file(filename=self.input_file + '.png')
+        _file = 'Outputs/{}.{}'.format(self.input_filename, '.png')
+        wc.to_file(filename=_file)
 
         # show the cloud
         plt.imshow(wc)
@@ -327,8 +329,8 @@ def read_input(file):
 # MAIN PROGRAM
 if __name__ == '__main__':
     try:
-        WordNetwork(input_file='',  # Provide the input text file here
-                    stop_file='',  # Provide the stopword file here
+        WordNetwork(input_file='Robert_Liu.txt',  # Provide the input text file here
+                    stop_file='stopwords_en.txt',  # Provide the stopword file here
                     generate_adj_matrix=False,
                     visualize=False)
     except Exception as ex1:
