@@ -27,8 +27,15 @@ try:
     from scipy.stats import entropy
     from wordcloud import WordCloud
     from pyvis.network import Network
+    import nltk
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer
+    from sumy.parsers.plaintext import PlaintextParser
+    from sumy.nlp.tokenizers import Tokenizer
+    from sumy.summarizers.lsa import LsaSummarizer
 except ImportError():
     print('ImportError: Missing Imports')
+
+nltk.download('vader_lexicon')
 
 
 # ======================================================================================================================
@@ -307,6 +314,46 @@ class WordNetwork:
             df.at[key[1], key[0]] = value
 
         return df
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Sentiment Analysis
+    @staticmethod
+    def sentiment_analysis(text):
+        """
+        The method sentiment_analysis takes as input a string text, and it performs sentiment analysis on the input
+        text. The method uses the SentimentIntensityAnalyzer from the nltk library to compute sentiment scores for
+        the input text. The sentiment scores are represented as a dictionary, with the 'compound' key indicating the
+        overall sentiment score, ranging from -1 (most negative) to 1 (most positive).
+
+        Based on the value of the 'compound' key in the sentiment scores, the method returns one of three strings:
+        'Positive' if the compound score is greater than or equal to 0.05, 'Negative' if the score is less than or equal
+        to -0.05, and 'Neutral' if the score is between -0.05 and 0.05.
+        """
+        sentiment_analyzer = SentimentIntensityAnalyzer()
+        sentiment = sentiment_analyzer.polarity_scores(text)
+        if sentiment['compound'] >= 0.05:
+            return 'Positive'
+        elif sentiment['compound'] <= -0.05:
+            return 'Negative'
+        else:
+            return 'Neutral'
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Sentiment Analysis
+    @staticmethod
+    def summarize_text(text, language='english', ratio=0.5):
+        """
+        The function summarize_text is a text summarization utility that summarizes the input text using the Latent
+        Semantic Analysis (LSA) algorithm. The input text is first parsed into a document using the PlaintextParser
+        from the sumy library, and a tokenizer for the specified language is applied. The LsaSummarizer class is then
+        used to generate a summary of the document, with the length of the summary determined by the ratio parameter.
+        The summary is returned as a string, with each sentence separated by a newline character.
+        """
+        parser = PlaintextParser.from_string(text, Tokenizer(language))
+        summarizer = LsaSummarizer()
+        summary = summarizer(parser.document, ratio)
+        summarized_text = '\n'.join([str(sentence) for sentence in summary])
+        return summarized_text
 
 
 def read_input(file):

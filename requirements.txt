@@ -9,3 +9,5 @@ gensim==4.3.0
 pyvis==0.3.1
 scipy==1.9.3        # Newer versions available
 wordcloud==1.8.2.2
+nltk~=3.7
+sumy~=0.11.0
