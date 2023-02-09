@@ -6,11 +6,13 @@ Briefing: The code is an implementation of a WordNetwork class in Python that pe
           > Wordcloud visualization
           > Topic modeling
           > General text statistics
+          > Sentiment Analysis
+          > Summarize Text
 
-          It starts by processing the input data and stopwords, then it calls several methods to perform each of the
-          tasks mentioned above. The results of these tasks are then printed or visualized, including a graph
-          representation of the co-occurrence matrix, the top n-grams, word frequency histogram, entropy of the text,
-          etc.
+  It starts by processing the input data and stopwords, then it calls several methods to perform each of the
+  tasks mentioned above. The results of these tasks are then printed or visualized, including a graph
+  representation of the co-occurrence matrix, the top n-grams, word frequency histogram, entropy of the text,
+  etc.
 """
 
 try:
@@ -338,7 +340,7 @@ class WordNetwork:
             return 'Neutral'
 
     # ------------------------------------------------------------------------------------------------------------------
-    # Sentiment Analysis
+    # Summarize Text
     @staticmethod
     def summarize_text(text, language='english', ratio=0.5):
         """
