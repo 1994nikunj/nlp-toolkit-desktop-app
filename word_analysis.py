@@ -43,22 +43,20 @@ class WordNetwork:
     def __init__(self,
                  input_file: str,
                  stop_file: str,
-                 generate_adj_matrix: bool,
                  visualize: bool):
 
         # Local class variable declaration
         self.input_filename = input_file
         self.input_file = 'Inputs/{}'.format(input_file)
         self.stop_file = 'Inputs/{}'.format(stop_file)
-        self.generate_adj_matrix = generate_adj_matrix
         self.visualize = visualize
 
+        self.top_comm = []
         self.txt_words = []
+        self.vocabulary = []
         self.stop_words = []
         self.clean_words = []
-        self.vocabulary = []
         self.n_grams_list = []
-        self.top_comm = []
 
         self.min_word_len = 2  # setting the minimum word length
         self.word_window = 4  # setting the window of separation between words
@@ -72,9 +70,6 @@ class WordNetwork:
         print('\n---This is an analysis for: ', self.input_file)
         self.process_data()
 
-        # visualizing the network
-        self.viz_adj_matrix()
-
         # cleaning the words and getting the list of unique words
         self.get_unique_words(self.txt_words, self.stop_words, self.min_word_len)
 
@@ -82,6 +77,10 @@ class WordNetwork:
         self.ngram()
 
         self.most_common()
+
+        # visualizing the network
+        if self.visualize:
+            self.viz_adj_matrix()
 
         print('\nThe following are the top {} -grams:'.format(self.n_sim_elems))
         for _id, _ngram in enumerate(self.top_comm):
@@ -99,9 +98,9 @@ class WordNetwork:
         entropy_val = entropy(word_freq_lst, base=10)
 
         print('\nThe following are some basic statistics on the input text.'
-              '\n\tTotal number of words: {total_words}'
-              '\n\tTotal number of unique words: {unique_words}'
-              '\n\tTotal entropy in the text: {total_entropy}'.format(total_words=len(self.clean_words),
+              '\n\tTotal Word Count: {total_words}'
+              '\n\tTotal Unique Word Count: {unique_words}'
+              '\n\tTotal Entropy in the text: {total_entropy}'.format(total_words=len(self.clean_words),
                                                                       unique_words=len(self.vocabulary),
                                                                       total_entropy=log(entropy_val, 10)))
 
@@ -127,19 +126,18 @@ class WordNetwork:
         color. The visualized graph includes buttons for filtering and is saved to an HTML file with a specified
         filename.
         """
-        if self.generate_adj_matrix:
-            adj_matrix = self.co_occurrence()
-            # print (adj_matrix)
+        adj_matrix = self.co_occurrence()
+        # print (adj_matrix)
 
-            G = nx.from_pandas_adjacency(adj_matrix)
-            visual_graph = Network(
-                height="500px",
-                bgcolor="#222222",
-                font_color="white"
-            )
-            visual_graph.from_nx(G)
-            visual_graph.show_buttons(filter_=['physics'])
-            visual_graph.show('/Outputs/' + self.input_filename + '.html')
+        G = nx.from_pandas_adjacency(adj_matrix)
+        visual_graph = Network(
+            height="500px",
+            bgcolor="#222222",
+            font_color="white"
+        )
+        visual_graph.from_nx(G)
+        visual_graph.show_buttons(filter_=['physics'])
+        visual_graph.show('/Outputs/' + self.input_filename + '.html')
 
     # ------------------------------------------------------------------------------------------------------------------
     # cleans text
@@ -164,6 +162,7 @@ class WordNetwork:
         """
         self.clean_words = []
         self.vocabulary = set()
+        stopwords = set(stopwords)
 
         for line in words:
             parts = line.strip().split()
@@ -174,38 +173,38 @@ class WordNetwork:
                     self.vocabulary.add(word)
 
     # ------------------------------------------------------------------------------------------------------------------
-    # creates a list of n-grams. Individual words are joined together by "_"
-    def ngram(self) -> None:
+    # creates a list of n-grams
+    def ngram(self, join_type='_') -> None:
         """
-        Creates a list of n-grams.
+        The ngram function creates a list of n-grams from the self.clean_words list. The n-grams are created by
+        joining the individual words in the list using the join_type argument (default is '_').
 
-        The function creates a list of n-grams by joining individual words in the input list `self.clean_words`
-        together using "_". For each iteration of the for loop, the function combines `self.clean_words[count]`
-        and `self.clean_words[count + self.n_value - 1]` and adds the combined string to the `self.n_grams_list`.
+        The function uses a list comprehension to iterate over the range of the self.clean_words list, taking a slice
+        of self.n_value words at a time and joining them together using the join_type separator. The resulting
+        n-grams are added to the self.n_grams_list list.
 
-        The for loop continues to run until all possible n-grams have been created.
+        The function updates the self.n_grams_list list in place.
         """
-        count = 0
-        for _ in self.clean_words[:len(self.clean_words) - self.n_value + 1]:
-            self.n_grams_list.append(self.clean_words[count] + '_' + self.clean_words[count + self.n_value - 1])
-            count += 1
+        self.n_grams_list = [join_type.join(self.clean_words[i:i + self.n_value]) for i in
+                             range(len(self.clean_words) - self.n_value + 1)]
 
     # ------------------------------------------------------------------------------------------------------------------
     # creates a list of the "num" most common elements/strings in an input list
     def most_common(self) -> None:
         """
-        Finds and stores the most common elements in a list.
+        The most_common method is used to get the n_sim_elems most common n-grams from the list self.n_grams_list.
+        The method uses the Counter method from the collections module to calculate the frequency of each n-gram in
+        the self.n_grams_list list.
 
-        The function takes an input list, `self.n_grams_list`, and uses the `Counter` class from the
-        `collections` module to count the number of occurrences of each element in the list. Then, it uses the
-        `most_common` method of the `Counter` object to find the `self.n_sim_elems` most common elements.
+        The result of Counter(self.n_grams_list) is a dictionary-like object that maps the n-grams to their
+        frequency. The most_common method of this object returns a list of tuples, each tuple representing an n-gram
+        and its frequency.
 
-        Finally, it stores these most common elements in a list, `self.top_comm`.
+        The method then uses a list comprehension to extract the first element of each tuple (i.e., the n-gram) and
+        store it in the list self.top_comm. The list comprehension iterates over the list most_common(self.n_sim_elems),
+        which is the list of n_sim_elems most common n-grams and their frequencies.
         """
-        data = Counter(self.n_grams_list)
-        common = data.most_common(self.n_sim_elems)
-        for i in range(0, self.n_sim_elems):
-            self.top_comm.append(common[i][0])
+        self.top_comm = [elem[0] for elem in Counter(self.n_grams_list).most_common(self.n_sim_elems)]
 
     # ------------------------------------------------------------------------------------------------------------------
     # creating and presenting the wordcloud
@@ -231,7 +230,7 @@ class WordNetwork:
         wc.generate(all_words_string)
 
         # store to file
-        _file = 'Outputs/{}.{}'.format(self.input_filename, '.png')
+        _file = 'Outputs/{}{}'.format(self.input_filename, '.png')
         wc.to_file(filename=_file)
 
         # show the cloud
@@ -376,9 +375,8 @@ def read_input(file):
 # MAIN PROGRAM
 if __name__ == '__main__':
     try:
-        WordNetwork(input_file='Robert_Liu.txt',  # Provide the input text file here
+        WordNetwork(input_file='Robert_Liu',  # Provide the input text file here
                     stop_file='stopwords_en.txt',  # Provide the stopword file here
-                    generate_adj_matrix=False,
                     visualize=False)
     except Exception as ex1:
         print('Something went wrong during execution: {}'.format(ex1))
