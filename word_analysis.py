@@ -20,6 +20,7 @@ Briefing: The code is an implementation of a WordNetwork class in Python that pe
 from collections import Counter, defaultdict
 from math import log
 import re
+import warnings
 
 import spacy
 import matplotlib.pyplot as plt
@@ -32,6 +33,10 @@ from gensim.models.ldamodel import LdaModel
 from pyvis.network import Network
 from scipy.stats import entropy
 from wordcloud import WordCloud
+
+warnings.filterwarnings("ignore", '.*the imp module.*')
+warnings.filterwarnings("ignore", category=DeprecationWarning, module='wordcloud')
+warnings.filterwarnings("ignore", category=FutureWarning, module='pyLDAvis')
 
 
 class TextAnalysis:
@@ -60,17 +65,15 @@ class TextAnalysis:
         self.additional_stopwords = ['engineering', 'data', 'engineers', 'digital', 'today', 'use', 'used']
 
         self._read_input_data()
+        self._visualize_adjacency_matrix()
         self._text_cleaning(self.raw_words)
-        print(self.vocabulary)
-        print(self.filtered_words)
-        # self._visualize_adjacency_matrix()
-        # self._generate_ngrams()
-        # self._calculate_frequency()
-        # self._print_most_frequent_ngrams()
-        # self._generate_wordcloud()
-        # self._topic_modeling()
-        # self._calculate_entropy()
-        # self._print_text_statistics()
+        self._generate_ngrams()
+        self._calculate_frequency()
+        self._print_most_frequent_ngrams()
+        self._generate_wordcloud()
+        self._topic_modeling()
+        self._calculate_entropy()
+        self._print_text_statistics()
 
     def _read_input_data(self):
         print(f"\n---This is an analysis for: {self.input_filepath}")
@@ -118,7 +121,8 @@ class TextAnalysis:
         words = text.split()
 
         # Filter out stop words and non-alphabetic words
-        filtered_words = [word.lower() for word in words if word.lower() not in self.stop_words and word.isalpha() and len(word) > self.min_word_length]
+        filtered_words = [word.lower() for word in words if
+                          word.lower() not in self.stop_words and word.isalpha() and len(word) > self.min_word_length]
 
         # Remove the names from the filtered words and vocabulary
         for name in names:
