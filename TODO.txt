@@ -1,5 +1,5 @@
 # calculating clusters from network  - lovan comm. detection algo
-# text cleaning - remove names
+# text cleaning - remove names                                              - DONE
 # motivational analysis
 # Text density = unique/total
 # Basic UI Addition - IN: input_file |  OUT: matrix/network/wordcloud

@@ -7,6 +7,10 @@ Briefing: The code is an implementation of a WordNetwork class in Python that pe
           > Topic modeling
           > General text statistics
 
+  $ pip install spacy
+  $ python -m spacy download en_core_web_sm
+  $ python -m spacy validate
+
   It starts by processing the input data and stopwords, then it calls several methods to perform each of the
   tasks mentioned above. The results of these tasks are then printed or visualized, including a graph
   representation of the co-occurrence matrix, the top n-grams, word frequency histogram, entropy of the text,
@@ -15,7 +19,9 @@ Briefing: The code is an implementation of a WordNetwork class in Python that pe
 
 from collections import Counter, defaultdict
 from math import log
+import re
 
+import spacy
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -39,7 +45,7 @@ class TextAnalysis:
         self.raw_words = []
         self.stop_words = []
         self.filtered_words = []
-        self.vocabulary = []
+        self.vocabulary = set()
         self.ngrams = []
         self.top_comm = []
         self.text_entropy = None
@@ -53,18 +59,20 @@ class TextAnalysis:
         # updating the stopword list
         self.additional_stopwords = ['engineering', 'data', 'engineers', 'digital', 'today', 'use', 'used']
 
-        self._preprocess_data()
-        self._visualize_adjacency_matrix()
-        self._extract_unique_words(self.raw_words)
-        self._generate_ngrams()
-        self._calculate_frequency()
-        self._print_most_frequent_ngrams()
-        self._generate_wordcloud()
-        self._topic_modeling()
-        self._calculate_entropy()
-        self._print_text_statistics()
+        self._read_input_data()
+        self._text_cleaning(self.raw_words)
+        print(self.vocabulary)
+        print(self.filtered_words)
+        # self._visualize_adjacency_matrix()
+        # self._generate_ngrams()
+        # self._calculate_frequency()
+        # self._print_most_frequent_ngrams()
+        # self._generate_wordcloud()
+        # self._topic_modeling()
+        # self._calculate_entropy()
+        # self._print_text_statistics()
 
-    def _preprocess_data(self):
+    def _read_input_data(self):
         print(f"\n---This is an analysis for: {self.input_filepath}")
 
         self.raw_words = read_input(file=self.input_filepath)
@@ -85,17 +93,45 @@ class TextAnalysis:
         visual_graph.show_buttons(filter_=['physics'])
         visual_graph.save_graph(self.input_filename + '.html')
 
-    def _extract_unique_words(self, words):
-        self.filtered_words = []
-        self.vocabulary = set()
+    def _text_cleaning(self, words):
+        # Load spaCy model
+        nlp = spacy.load("en_core_web_sm")
 
-        for line in words:
-            parts = line.strip().split()
-            for _word in parts:
-                word = _word.lower()
-                if word not in self.stop_words and word.isalpha() and len(word) > self.min_word_length:
-                    self.filtered_words.append(word)
-                    self.vocabulary.add(word)
+        # Combine all raw words into a single text string
+        text = ' '.join(words)
+
+        # Perform Named Entity Recognition (NER) on the text
+        doc = nlp(text)
+
+        # Define regular expression pattern for names
+        name_pattern = re.compile(r"\b([A-Z][a-z]+\s)*[A-Z][a-z]+\b")
+
+        # Remove all names from the text
+        names = []
+        for ent in doc.ents:
+            if ent.label_ == "PERSON":
+                name = ent.text
+                text = re.sub(name_pattern, "", text)
+                names.append(name)
+
+        # Split the modified text into individual words
+        words = text.split()
+
+        # Filter out stop words and non-alphabetic words
+        filtered_words = [word.lower() for word in words if word.lower() not in self.stop_words and word.isalpha() and len(word) > self.min_word_length]
+
+        # Remove the names from the filtered words and vocabulary
+        for name in names:
+            name_words = name.split()
+            for name_word in name_words:
+                if name_word.lower() in filtered_words:
+                    filtered_words.remove(name_word.lower())
+                if name_word.lower() in self.vocabulary:
+                    self.vocabulary.remove(name_word.lower())
+
+        # Update the filtered words and vocabulary lists
+        self.filtered_words = filtered_words
+        self.vocabulary = set(filtered_words)
 
     def _generate_ngrams(self) -> None:
         self.ngrams = ['_'.join(self.filtered_words[i:i + self.n_size]) for i in
@@ -154,7 +190,7 @@ class TextAnalysis:
         vocab = set()
         for text in self.raw_words:
             text = text.lower().split()
-            self._extract_unique_words(text)
+            self._text_cleaning(text)
             for i in range(len(self.filtered_words)):
                 token = self.filtered_words[i]
                 vocab.add(token)
