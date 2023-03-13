@@ -2,4 +2,11 @@
 # text cleaning - remove names                                              - DONE
 # motivational analysis
 # Text density = unique/total
-# Basic UI Addition - IN: input_file |  OUT: matrix/network/wordcloud
+# UI changes:
+    # 1. Add headings and titles to each section: To make it easier for users to navigate and understand the purpose of each section, you can add headings and titles to each frame and button. For example, you can add a title to the input frame that says "Select Input File" and another title to the options frame that says "Analysis Options".
+    # 2. Use icons or images: You can add icons or images to the buttons to make them more visually appealing and distinguishable. For example, you can use a folder icon for the browse button, a gear icon for the options button, and a chart icon for the generate button.
+    # 3. Group related options together: To make it easier for users to understand the relationship between different options, you can group related options together. For example, you can group the "Save Graph" and "Save Wordcloud" checkboxes under a new heading called "Graph Options".
+    # 4. Use clearer labels: Some of the labels are not very clear, such as "Enable Console Prints". You can use clearer labels that are more intuitive and easier to understand. For example, you can change "Enable Console Prints" to "Display Output in Console".
+    # 5. Use consistent spacing and alignment: To make the UI more visually appealing, you can use consistent spacing and alignment throughout the UI. For example, you can use the same amount of padding for all buttons and frames, and align all labels and checkboxes to the left.
+    # 6. Use color to highlight important elements: You can use color to highlight important elements such as headings, titles, and buttons. For example, you can use a different color for the generate button to make it stand out.
+    # 7. Provide feedback and error messages: You can provide feedback and error messages to users to help them understand what is happening when they interact with the UI. For example, you can display a message when the user selects an invalid file or when the analysis is complete.

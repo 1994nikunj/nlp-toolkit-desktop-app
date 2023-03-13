@@ -46,6 +46,8 @@ warnings.filterwarnings("ignore", category=FutureWarning, module='pyLDAvis')
 
 class TextAnalysisGUI:
     def __init__(self):
+        PADX = 5
+
         self.window = tk.Tk()
         self.window.title("Text Analysis Results")
         self.window.geometry("800x600")
@@ -56,10 +58,13 @@ class TextAnalysisGUI:
 
         # Create input file label and browse button
         self.input_filename = ''
-        self.input_file_label = tk.Label(self.input_frame, text='Input File: {}'.format(self.input_filename))
-        self.input_file_label.pack(side=tk.LEFT, padx=5)
+        self.input_filename_entry = tk.StringVar()
+        self.input_file_label = tk.Label(self.input_frame, text='Input File:', width=10, anchor="w")
+        self.input_file_label.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
+        self.input_file_entry = tk.Entry(self.input_frame, textvariable=self.input_filename_entry, width=50)
+        self.input_file_entry.pack(side=tk.LEFT, padx=PADX, pady=PADX)
         self.input_browse_button = tk.Button(self.input_frame, text="Browse", command=self.browse_input_file)
-        self.input_browse_button.pack(side=tk.LEFT, padx=5)
+        self.input_browse_button.pack(side=tk.LEFT, padx=PADX, pady=PADX)
 
         # Create frame for stopword file selection
         self.stopword_frame = tk.Frame(self.window)
@@ -67,11 +72,13 @@ class TextAnalysisGUI:
 
         # Create stopword file label and browse button
         self.stopword_filename = ''
-        self.stopword_file_label = tk.Label(self.stopword_frame,
-                                            text='Stopword File: {}'.format(self.stopword_filename))
-        self.stopword_file_label.pack(side=tk.LEFT, padx=5)
+        self.stopword_filename_entry = tk.StringVar()
+        self.stopword_file_label = tk.Label(self.stopword_frame, text='Stopword File:', width=12, anchor="w")
+        self.stopword_file_label.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
+        self.stopword_file_entry = tk.Entry(self.stopword_frame, textvariable=self.stopword_filename_entry, width=50)
+        self.stopword_file_entry.pack(side=tk.LEFT, padx=PADX, pady=PADX)
         self.stopword_browse_button = tk.Button(self.stopword_frame, text="Browse", command=self.browse_stopword_file)
-        self.stopword_browse_button.pack(side=tk.LEFT, padx=5)
+        self.stopword_browse_button.pack(side=tk.LEFT, padx=PADX, pady=PADX)
 
         # Create frame for options
         self.options_frame = tk.Frame(self.window)
@@ -81,31 +88,28 @@ class TextAnalysisGUI:
         self.enable_console_prints_var = tk.BooleanVar(value=False)
         self.enable_console_prints_checkbox = tk.Checkbutton(self.options_frame, text='Enable Console Prints',
                                                              variable=self.enable_console_prints_var)
-        self.enable_console_prints_checkbox.pack(side=tk.LEFT, padx=5)
+        self.enable_console_prints_checkbox.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
 
         # Create save graph checkbox
         self.save_graph_var = tk.BooleanVar(value=False)
         self.save_graph_checkbox = tk.Checkbutton(self.options_frame, text='Save Graph',
                                                   variable=self.save_graph_var)
-        self.save_graph_checkbox.pack(side=tk.LEFT, padx=5)
+        self.save_graph_checkbox.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
 
         # Create save wordcloud checkbox
         self.save_wordcloud_var = tk.BooleanVar(value=False)
         self.save_wordcloud_checkbox = tk.Checkbutton(self.options_frame, text='Save Wordcloud',
                                                       variable=self.save_wordcloud_var)
-        self.save_wordcloud_checkbox.pack(side=tk.LEFT, padx=5)
+        self.save_wordcloud_checkbox.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
 
         # Create generate button
         self.generate_button = tk.Button(self.window, text="Generate", command=self.generate_analysis)
-        self.generate_button.pack(side=tk.TOP, pady=10)
+        self.generate_button.pack(side=tk.TOP, pady=PADX)
 
         # Create text widget to display results
         self.text_widget = tk.Text(self.window)
-        self.text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-        # Create canvas widget to display wordcloud
-        self.canvas = tk.Canvas(self.window, bg="white", width=600, height=600)
-        self.canvas.pack(side=tk.RIGHT)
+        self.text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=PADX, pady=PADX)
+        self.text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10, ipadx=10, ipady=10)
 
         self.window.mainloop()
 
@@ -114,17 +118,19 @@ class TextAnalysisGUI:
             initialdir="/", title="Select file",
             filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
         )
-        self.input_filename = os.path.basename(input_path)
-        self.input_file_label.config(text='Input File: {}'.format(self.input_filename))
+        _name = os.path.basename(input_path)
+        self.input_filename = _name
+        self.input_filename_entry.set(_name)
 
     def browse_stopword_file(self):
-        stopword_filename = tk.filedialog.askopenfilename(
+        stopword_path = tk.filedialog.askopenfilename(
             initialdir="/",
             title="Select file",
             filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
         )
-        self.stopword_filename = os.path.basename(stopword_filename)
-        self.stopword_file_label.config(text='Stopword File: {}'.format(self.stopword_filename))
+        _name = os.path.basename(stopword_path)
+        self.stopword_filename = _name
+        self.stopword_filename_entry.set(_name)
 
     def generate_analysis(self):
         self.text_widget.delete('1.0', tk.END)
@@ -136,24 +142,30 @@ class TextAnalysisGUI:
         #       f'save_wordcloud: {self.save_wordcloud_var.get()}\n')
 
         text_analysis = TextAnalysis(
-            input_filename=self.input_filename,
-            stopword_filename=self.stopword_filename,
+            input_filename=str(self.input_filename),
+            stopword_filename=str(self.stopword_filename),
             enable_console_prints=self.enable_console_prints_var.get(),
             tkinter_root=self.window,
             save_graph=self.save_graph_var.get(),
             save_wordcloud=self.save_wordcloud_var.get()
         )
 
-        self.text_widget.insert(tk.END, f"\n---This is an analysis for: {self.input_filename}")
-        self.text_widget.insert(tk.END, "\n\n---Most Frequent N-Grams---\n")
-        self.text_widget.insert(tk.END, text_analysis.most_frequent_ngrams.to_string(index=False))
+        user_name = ' '.join(str(self.input_filename).replace('.txt', '').split('_'))
+        self.text_widget.insert(tk.END, f"\n$ This is an analysis for: {user_name}")
 
-        self.text_widget.insert(tk.END, "\n\n---Top Communities---\n")
-        for community in text_analysis.top_comm:
-            self.text_widget.insert(tk.END, f"\nCommunity {community[0]}: {community[1]}")
+        self.text_widget.insert(tk.END, f"\n\n$ The following are the top ngrams (n: {text_analysis.n_size}):")
+        for ngram in text_analysis.top_ngrams:
+            self.text_widget.insert(tk.END, f"\n\t{ngram}")
 
-        self.text_widget.insert(tk.END, "\n\n---Text Entropy---\n")
-        self.text_widget.insert(tk.END, f"\n{text_analysis.text_entropy:.2f}")
+        self.text_widget.insert(tk.END, f"\n\n$ The following are the top {text_analysis.num_topics} topics:\n")
+        for i, topic in enumerate(text_analysis.lda.show_topics(num_topics=text_analysis.num_topics)):
+            top_words = text_analysis.lda.show_topics(text_analysis.num_topics)[i][1]
+            self.text_widget.insert(tk.END, f"\tTopic {i + 1}: {top_words}\n")
+
+        self.text_widget.insert(tk.END, "\n$ Basic text statistics:")
+        self.text_widget.insert(tk.END, f"\n\t> Total Words:        {text_analysis.total_words}")
+        self.text_widget.insert(tk.END, f"\n\t> Total Unique words: {text_analysis.unique_words}")
+        self.text_widget.insert(tk.END, f"\n\t> Total Text Entropy: {text_analysis.text_entropy:.2f}")
 
 
 class TextAnalysis:
@@ -178,16 +190,21 @@ class TextAnalysis:
         self.vocabulary = set()
         self.ngrams = []
         self.top_comm = []
-        self.text_entropy = None
+
         self.wordcloud_image = None
         self.wordcloud = None
+        self.lda = None
+
+        self.text_entropy = None
+        self.total_words = None
+        self.unique_words = None
 
         self.n_size = 2
         self.num_topics = 5
         self.word_window = 4
         self.num_similar = 10
         self.min_word_length = 2
-        self.most_frequent_ngrams = None
+        self.top_ngrams = None
 
         # updating the stopword list
         self.additional_stopwords = ['engineering', 'data', 'engineers', 'digital', 'today', 'use', 'used']
@@ -200,7 +217,7 @@ class TextAnalysis:
         self._print_most_frequent_ngrams()
         self._generate_wordcloud()
         self._topic_modeling()
-        self._calculate_entropy()
+        self._calculate_stats()
         if self.console:
             self._print_text_statistics()
 
@@ -276,10 +293,9 @@ class TextAnalysis:
         self.top_comm = [ngram for ngram, count in Counter(self.ngrams).most_common(self.num_similar)]
 
     def _print_most_frequent_ngrams(self) -> None:
-        self.most_frequent_ngrams = ["{}. {}".format(_id + 1, ngram) for _id, ngram in enumerate(self.top_comm)]
+        self.top_ngrams = ["{}. {}".format(_id + 1, ngram) for _id, ngram in enumerate(self.top_comm)]
         if self.console:
-            print('\nThe following are the top {} -grams:\n{}'.format(
-                self.num_similar, '\n'.join(self.most_frequent_ngrams)))
+            print('\nThe following are the top {} -grams:\n{}'.format(self.num_similar, '\n'.join(self.top_ngrams)))
 
     def _generate_wordcloud(self) -> None:
         all_words_string = ' '.join(self.filtered_words + self.top_comm)
@@ -309,16 +325,16 @@ class TextAnalysis:
         dictionary = Dictionary(tokens)
         corpus = [dictionary.doc2bow(text) for text in tokens]
 
-        lda = LdaModel(corpus=corpus,
-                       num_topics=self.num_topics,
-                       id2word=dictionary)
+        self.lda = LdaModel(corpus=corpus,
+                            num_topics=self.num_topics,
+                            id2word=dictionary)
         if self.console:
             print('\n the following are the top', self.num_topics, 'topics:')
 
-            for i in range(0, len(lda.show_topics(self.num_topics))):
-                print(lda.show_topics(self.num_topics)[i][1], '\n')
+            for i in range(0, len(self.lda.show_topics(self.num_topics))):
+                print(self.lda.show_topics(self.num_topics)[i][1], '\n')
 
-        lda_display = pyLDAvis.gensim.prepare(lda, corpus, dictionary, sort_topics=False)
+        lda_display = pyLDAvis.gensim.prepare(self.lda, corpus, dictionary, sort_topics=False)
 
         return pyLDAvis.display(lda_display)
 
@@ -347,23 +363,20 @@ class TextAnalysis:
 
         return df
 
-    def _calculate_entropy(self) -> None:
+    def _calculate_stats(self) -> None:
         words_counter = Counter(self.filtered_words)
         word_freq_lst = list(words_counter.values())
         self.text_entropy = entropy(word_freq_lst, base=10)
 
+        self.total_words = len(self.filtered_words)
+        self.unique_words = len(self.vocabulary)
+        self.text_entropy = round(log(self.text_entropy, 10), 2)
+
     def _print_text_statistics(self) -> None:
-        stats = {
-            'total_words':   len(self.filtered_words),
-            'unique_words':  len(self.vocabulary),
-            'total_entropy': round(log(self.text_entropy, 10), 2)
-        }
-
         message = '\nThe following are some basic statistics on the input text.' \
-                  '\n\tTotal number of words: {total_words}' \
-                  '\n\tTotal number of unique words: {unique_words}' \
-                  '\n\tTotal entropy in the text: {total_entropy}'.format(**stats)
-
+                  f'\n\tTotal Words:        {self.total_words}' \
+                  f'\n\tTotal Unique words: {self.unique_words}' \
+                  f'\n\tTotal Text Entropy: {self.text_entropy}'
         print(message)
 
 
