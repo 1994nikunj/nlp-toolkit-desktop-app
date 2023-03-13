@@ -129,7 +129,7 @@ class TextAnalysisGUI:
             text="Generate",
             image=self.extract_button_photo,
             compound="left",
-            command=lambda: print("Button clicked!")
+            command=self.generate_analysis
         )
         extract_button.pack(pady=10)
 
@@ -144,9 +144,8 @@ class TextAnalysisGUI:
             initialdir="/", title="Select file",
             filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
         )
-        _name = os.path.basename(input_path)
-        self.input_filename = _name
-        self.input_filename_entry.set(_name)
+        self.input_filename_entry.set(input_path)
+        self.input_filename = get_filename(input_path)
 
     def browse_stopword_file(self):
         stopword_path = tk.filedialog.askopenfilename(
@@ -154,9 +153,8 @@ class TextAnalysisGUI:
             title="Select file",
             filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
         )
-        _name = os.path.basename(stopword_path)
-        self.stopword_filename = _name
-        self.stopword_filename_entry.set(_name)
+        self.stopword_filename_entry.set(stopword_path)
+        self.stopword_filename = get_filename(stopword_path)
 
     def generate_analysis(self):
         self.text_widget.delete('1.0', tk.END)
@@ -192,6 +190,10 @@ class TextAnalysisGUI:
         self.text_widget.insert(tk.END, f"\n\t> Total Words:        {text_analysis.total_words}")
         self.text_widget.insert(tk.END, f"\n\t> Total Unique words: {text_analysis.unique_words}")
         self.text_widget.insert(tk.END, f"\n\t> Total Text Entropy: {text_analysis.text_entropy:.2f}")
+
+
+def get_filename(path):
+    return os.path.basename(path)
 
 
 class TextAnalysis:

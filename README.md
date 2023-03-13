@@ -8,3 +8,6 @@ Analysis and operations being performed:
 - Wordcloud visualization
 - Topic modeling
 - General text statistics
+
+## The GUI:
+![screenshot.png](assets%2Fscreenshot.png)
