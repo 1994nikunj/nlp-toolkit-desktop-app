@@ -23,7 +23,7 @@ import tkinter as tk
 import warnings
 from collections import Counter, defaultdict
 from math import log
-from tkinter import filedialog
+from tkinter import filedialog, ttk
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -34,7 +34,7 @@ import spacy
 from gensim.corpora import Dictionary
 from gensim.models.ldamodel import LdaModel
 from pandas import DataFrame
-from PIL import ImageTk
+from PIL import ImageTk, Image
 from pyvis.network import Network
 from scipy.stats import entropy
 from wordcloud import WordCloud
@@ -51,64 +51,90 @@ class TextAnalysisGUI:
         self.window = tk.Tk()
         self.window.title("Text Analysis Results")
         self.window.geometry("800x600")
+        self.window.configure(bg="#1e1f22")
+
+        style = ttk.Style()
+        style.configure('TButton', font=('calibri', 10, 'bold'), borderwidth=0, background="#1e1f22",
+                        foreground="black")
+        style.map('TButton', background=[('active', '#1e1f22'), ('disabled', '#1e1f22')],
+                  foreground=[('active', 'black'), ('disabled', 'black'), ('pressed', 'black')],
+                  relief=[('pressed', 'sunken')], bordercolor=[('active', '#4e8752')],
+                  focuscolor=[('!pressed', '#4e8752')])
+        style.configure('TButton', relief='flat', borderwidth=0, borderradius=15)
 
         # Create frame for input file selection
-        self.input_frame = tk.Frame(self.window)
+        self.input_frame = tk.Frame(self.window, bg="#1e1f22")
         self.input_frame.pack(side=tk.TOP, fill=tk.X)
+
+        browse_btn_photo = ImageTk.PhotoImage(Image.open("assets/browse.png").resize((30, 30), Image.LANCZOS))
 
         # Create input file label and browse button
         self.input_filename = ''
         self.input_filename_entry = tk.StringVar()
-        self.input_file_label = tk.Label(self.input_frame, text='Input File:', width=10, anchor="w")
+        self.input_file_label = tk.Label(self.input_frame, text='Input File:', width=10, anchor="w", bg="#1e1f22",
+                                         fg="white")
         self.input_file_label.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
         self.input_file_entry = tk.Entry(self.input_frame, textvariable=self.input_filename_entry, width=50)
         self.input_file_entry.pack(side=tk.LEFT, padx=PADX, pady=PADX)
-        self.input_browse_button = tk.Button(self.input_frame, text="Browse", command=self.browse_input_file)
-        self.input_browse_button.pack(side=tk.LEFT, padx=PADX, pady=PADX)
+        input_browse_button = ttk.Button(self.input_frame, text="Browse", image=browse_btn_photo, compound="left",
+                                         command=self.browse_input_file)
+        input_browse_button.pack(padx=PADX, pady=PADX, side=tk.LEFT)
 
         # Create frame for stopword file selection
-        self.stopword_frame = tk.Frame(self.window)
+        self.stopword_frame = tk.Frame(self.window, bg="#1e1f22")
         self.stopword_frame.pack(side=tk.TOP, fill=tk.X)
 
         # Create stopword file label and browse button
         self.stopword_filename = ''
         self.stopword_filename_entry = tk.StringVar()
-        self.stopword_file_label = tk.Label(self.stopword_frame, text='Stopword File:', width=12, anchor="w")
+        self.stopword_file_label = tk.Label(self.stopword_frame, text='Stopword File:', width=12, anchor="w",
+                                            bg="#1e1f22", fg="white")
         self.stopword_file_label.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
         self.stopword_file_entry = tk.Entry(self.stopword_frame, textvariable=self.stopword_filename_entry, width=50)
         self.stopword_file_entry.pack(side=tk.LEFT, padx=PADX, pady=PADX)
-        self.stopword_browse_button = tk.Button(self.stopword_frame, text="Browse", command=self.browse_stopword_file)
-        self.stopword_browse_button.pack(side=tk.LEFT, padx=PADX, pady=PADX)
+        stopword_browse_button = ttk.Button(self.stopword_frame, text="Browse", image=browse_btn_photo, compound="left",
+                                            command=self.browse_stopword_file)
+        stopword_browse_button.pack(padx=PADX, pady=PADX, side=tk.LEFT)
 
         # Create frame for options
-        self.options_frame = tk.Frame(self.window)
+        self.options_frame = tk.Frame(self.window, bg="#1e1f22")
         self.options_frame.pack(side=tk.TOP, fill=tk.X)
 
         # Create enable console prints checkbox
         self.enable_console_prints_var = tk.BooleanVar(value=False)
         self.enable_console_prints_checkbox = tk.Checkbutton(self.options_frame, text='Enable Console Prints',
-                                                             variable=self.enable_console_prints_var)
+                                                             variable=self.enable_console_prints_var, bg="#1e1f22",
+                                                             fg="white", activebackground="#4e8752",
+                                                             selectcolor="#1e1f22")
         self.enable_console_prints_checkbox.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
 
         # Create save graph checkbox
         self.save_graph_var = tk.BooleanVar(value=False)
-        self.save_graph_checkbox = tk.Checkbutton(self.options_frame, text='Save Graph',
-                                                  variable=self.save_graph_var)
+        self.save_graph_checkbox = tk.Checkbutton(self.options_frame, text='Save Graph', variable=self.save_graph_var,
+                                                  bg="#1e1f22", fg="white", activebackground="#4e8752",
+                                                  selectcolor="#1e1f22")
         self.save_graph_checkbox.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
 
         # Create save wordcloud checkbox
         self.save_wordcloud_var = tk.BooleanVar(value=False)
         self.save_wordcloud_checkbox = tk.Checkbutton(self.options_frame, text='Save Wordcloud',
-                                                      variable=self.save_wordcloud_var)
+                                                      variable=self.save_wordcloud_var, bg="#1e1f22", fg="white",
+                                                      activebackground="#4e8752", selectcolor="#1e1f22")
         self.save_wordcloud_checkbox.pack(side=tk.LEFT, padx=PADX, pady=PADX, anchor="w")
 
         # Create generate button
-        self.generate_button = tk.Button(self.window, text="Generate", command=self.generate_analysis)
-        self.generate_button.pack(side=tk.TOP, pady=PADX)
+        extract_button_photo = Image.open("assets/extract_button.png").resize((30, 30), Image.LANCZOS)
+        self.extract_button_photo = ImageTk.PhotoImage(extract_button_photo)
+        extract_button = ttk.Button(
+            text="Generate",
+            image=self.extract_button_photo,
+            compound="left",
+            command=lambda: print("Button clicked!")
+        )
+        extract_button.pack(pady=10)
 
         # Create text widget to display results
-        self.text_widget = tk.Text(self.window)
-        self.text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=PADX, pady=PADX)
+        self.text_widget = tk.Text(self.window, bg='#2b2d30', fg='white')
         self.text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10, ipadx=10, ipady=10)
 
         self.window.mainloop()
