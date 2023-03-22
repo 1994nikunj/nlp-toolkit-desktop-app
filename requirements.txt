@@ -9,5 +9,4 @@ gensim
 pyvis
 scipy
 wordcloud
-spacy
 Pillow

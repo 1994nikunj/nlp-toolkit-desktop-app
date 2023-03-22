@@ -1,0 +1,51 @@
+My name is Robert Liu and i'm a mathematician and quickly pivoted to becoming an IT engineer.
+Strategic coding helped me join Deloitte.
+Worked in the domains of data science, predictive analytics in the US Navy.
+Few years ago, I left Deloitte and joined a multi-national bank as a Data Science Director.
+Currently work as a Chief Data officer and a Chief Technical Officer.
+I consider some of the understanding has to be technical and some skills needed to push things forward are non-technical.
+I think Digital Engineering is one of those buzz words that are going on in the industry.
+Being digital doesn't necessarily mean you need to have a digital background.
+Humans use Artificial Intelligence and Machine Learning in business for automating several tasks.
+In recent years we have the capability to go beyond Artificial Intelligence for autonomy.
+Today we have a narrow type of Artificial Intelligence – play a game or decide what documents belongs to which class and it has a narrow task.
+In the past, automation was what we considered Artificial Intelligence, it is different today.
+Narrow tasks that rely on machine learning are the primary driver in the workforce.
+When I was working in the bank back in 2014 with the Data Science team, it was the first time I used the term Data Science.
+I think Data Science and Data Analytics are the pathway for getting into Artificial Intelligence.
+First half is that the scientific endeavor that the scientists perform can take the experiments beyond outside of their work.
+The second half is the Artificial Intelligence – data collected from the sensors and perception.
+All three definitions are somewhat narrow, and I think we have to simplify them a bit.
+I don't disagree with these definitions.
+They are correct but narrow.
+Core skillset is to be able to recognize the potential for data as a decision tool and understand how a business operates.
+Critical skills – I'd think of it as a task to become the Chief Technical Officer.
+I'd look for someone from the 80s or 90s who have a good understanding of digital engineering and business analysis.
+The folks at two camps used the sensors to capture data and used Artificial Intelligence and Machine Learning algorithms to work on domains from Computer Vision to Auditory to chemical sign detection.
+First half has a certain part of the responsibility of collecting data, curating and preprocessing the data.
+The other half – the Data science folks and people who work in psychology or neuroscience use artificial intelligence and machine learning, robotic process automation, the IT technician must have the ability to use Artificial Intelligence and Machine Learning algorithms.
+Small unit maneuver, vehicles can do things that humans used to do before using Machine Learning, sensors, robotics.
+Data Analytics has been used for the past two decades.
+I think the days of a database technician are numbered.
+The data is collected in an unstructured lake, can be central or distributed.
+Data Analytics include multiple types of data, systems, APIs, basic machine learning algorithms, predictive analytics.
+Top tier data scientists, data analytics that have the ability to use neural networks, adversarial networks, Reinforcement Learning.
+Data modeling is the key piece here.
+We need to get a lot better with digital engineering.
+There is a lot of data out there and using the curated data for learning is great.
+Failure of big data era that came and went.
+Humans can't understand the data that's coming in which makes digital engineering important.
+I think digital engineering, software literacy, digital literacy needs to be addressed.
+Everything needs to be addressed.
+Natural Language processing – not there yet.
+We used a number of natural language systems at the bank which involved curating and characterizing the data in the backend.
+A lot of work needs to be done there in the navy.
+Data analytics involves layered and semantic complexity.
+Data is what a human can see and perceive.
+Most of the data is unstructured.
+Tagging the data is a challenge.
+Learning new algorithms and constant training is required.
+Interested in all of those areas.
+There are folks that don't understand hardware and software.
+Folks are not a neural network, reinforcement learning expert, not a psychologist, neuroscientist.
+Will need many years to become an expert in all of these areas.

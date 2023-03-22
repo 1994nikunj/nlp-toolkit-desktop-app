@@ -7,10 +7,6 @@ Briefing: The code is an implementation of a WordNetwork class in Python that pe
           > Topic modeling
           > General text statistics
 
-  $ pip install spacy
-  $ python -m spacy download en_core_web_sm
-  $ python -m spacy validate
-
   It starts by processing the input data and stopwords, then it calls several methods to perform each of the
   tasks mentioned above. The results of these tasks are then printed or visualized, including a graph
   representation of the co-occurrence matrix, the top n-grams, word frequency histogram, entropy of the text,
@@ -18,7 +14,6 @@ Briefing: The code is an implementation of a WordNetwork class in Python that pe
 """
 
 import os
-import re
 import tkinter as tk
 import warnings
 from collections import Counter, defaultdict
@@ -30,11 +25,10 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import pyLDAvis.gensim
-import spacy
 from gensim.corpora import Dictionary
 from gensim.models.ldamodel import LdaModel
 from pandas import DataFrame
-from PIL import ImageTk, Image
+from PIL import Image, ImageTk
 from pyvis.network import Network
 from scipy.stats import entropy
 from wordcloud import WordCloud
@@ -270,44 +264,16 @@ class TextAnalysis:
         visual_graph.from_nx(G)
         visual_graph.show_buttons(filter_=['physics'])
         if self.save_graph:
-            visual_graph.save_graph(self.input_filename + '.html')
+            graph_name = '{}.{}'.format(self.input_filename.replace('.txt', ''), 'html')
+            visual_graph.save_graph(graph_name)
 
     def _text_cleaning(self, words) -> None:
-        # Load spaCy model
-        nlp = spacy.load("en_core_web_sm")
-
-        # Combine all raw words into a single text string
-        text = ' '.join(words)
-
-        # Perform Named Entity Recognition (NER) on the text
-        doc = nlp(text)
-
-        # Define regular expression pattern for names
-        name_pattern = re.compile(r"\b([A-Z][a-z]+\s)*[A-Z][a-z]+\b")
-
-        # Remove all names from the text
-        names = []
-        for ent in doc.ents:
-            if ent.label_ == "PERSON":
-                name = ent.text
-                text = re.sub(name_pattern, "", text)
-                names.append(name)
-
         # Split the modified text into individual words
-        words = text.split()
+        words = ' '.join(words).split()
 
         # Filter out stop words and non-alphabetic words
         filtered_words = [word.lower() for word in words if
                           word.lower() not in self.stop_words and word.isalpha() and len(word) > self.min_word_length]
-
-        # Remove the names from the filtered words and vocabulary
-        for name in names:
-            name_words = name.split()
-            for name_word in name_words:
-                if name_word.lower() in filtered_words:
-                    filtered_words.remove(name_word.lower())
-                if name_word.lower() in self.vocabulary:
-                    self.vocabulary.remove(name_word.lower())
 
         # Update the filtered words and vocabulary lists
         self.filtered_words = filtered_words
@@ -340,7 +306,7 @@ class TextAnalysis:
 
         if self.save_wordcloud:
             # store to file
-            _file = 'Outputs/{}.{}'.format(self.input_filename.replace('.txt', ''), '.png')
+            _file = 'Outputs/{}.{}'.format(self.input_filename.replace('.txt', ''), 'png')
             self.wordcloud.to_file(filename=_file)
 
         if self.console:
